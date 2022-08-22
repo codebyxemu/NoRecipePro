@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.xemu</groupId>
-    <artifactId>NoReceipePro</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>NoRecipePro</artifactId>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
-    <name>NoReceipePro</name>
+    <name>NoRecipePro</name>
 
     <description>Remove specific or all crafting recipes</description>
     <properties>

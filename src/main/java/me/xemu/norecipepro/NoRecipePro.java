@@ -5,10 +5,14 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,6 +23,9 @@ public final class NoRecipePro extends JavaPlugin implements CommandExecutor {
 	public static NoRecipePro getInstance() {
 		return instance;
 	}
+
+	private File languageFile;
+	private FileConfiguration languageConfig;
 
 	@Override
 	public void onEnable() {
@@ -50,9 +57,40 @@ public final class NoRecipePro extends JavaPlugin implements CommandExecutor {
 
 	}
 
+	private String translate(String s) {
+		return ChatColor.translateAlternateColorCodes('&', s);
+	}
+
 	private void loadConfig() {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
+
+		languageFile = new File(getDataFolder(), "language.yml");
+		languageConfig = YamlConfiguration.loadConfiguration(languageFile);
+
+		if (!languageFile.exists()) {
+			try {
+				getLogger().info("Created language file.");
+				languageFile.createNewFile();
+			} catch (IOException e) {
+				getLogger().info("Failed creating language file.");
+				throw new RuntimeException(e);
+			}
+		}
+
+		languageConfig.addDefault("noPermission", "&8[&dNoRecipePro&8] &cYou do not have enough permissions to do this.");
+		languageConfig.addDefault("reloadedPlugin", "&8[&dNoRecipePro&8] &aConfiguration and Recipes has been reloaded!");
+		languageConfig.addDefault("failedReloadingPlugin", "&8[&dNoRecipePro&8] &cCould not reload the plugin, config and recipes. Read console error.");
+		languageConfig.options().copyDefaults(true);
+		saveLanguage();
+	}
+
+	private void saveLanguage() {
+		try {
+			languageConfig.save(languageFile);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void clearRecipes() {
@@ -88,7 +126,7 @@ public final class NoRecipePro extends JavaPlugin implements CommandExecutor {
 		Player player = (Player) sender;
 
 		if (!player.hasPermission(getConfig().getString("admin-perm"))) {
-			player.sendMessage(ChatColor.RED + "You don't have enough permissions to do this.");
+			player.sendMessage(translate(languageConfig.getString("noPermission")));
 			return true;
 		}
 
@@ -96,10 +134,10 @@ public final class NoRecipePro extends JavaPlugin implements CommandExecutor {
 			reloadConfig();
 			removeBlockedRecipes();
 			clearRecipes();
-			player.sendMessage(ChatColor.GREEN + "Reloaded Recipes & Configs!");
+			player.sendMessage(translate(languageConfig.getString("reloadedPlugin")));
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			player.sendMessage(ChatColor.RED + "Failed Reloaded Recipes & Configs!");
+			player.sendMessage(translate(languageConfig.getString("failedReloadingPlugin")));
 			return true;
 		}
 
