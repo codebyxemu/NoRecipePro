@@ -1,0 +1,10 @@
+name: NoRecipePro
+version: '${project.version}'
+main: me.xemu.norecipepro.NoRecipePro
+api-version: 1.19
+authors: [ Xemu ]
+description: Remove specific or all crafting recipes
+
+commands:
+  norecipepro-reload:
+    description: Reload plugin

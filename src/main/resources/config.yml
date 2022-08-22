@@ -1,0 +1,5 @@
+stop-all: false # Removes all recipes from the server.
+blocked-recipes: # Add any material name here. Native Version: LATEST 1.19
+  - "HOPPER"
+
+admin-perm: "norecipepro.admin" # For reload command
